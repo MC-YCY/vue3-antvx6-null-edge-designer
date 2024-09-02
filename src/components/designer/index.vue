@@ -74,7 +74,8 @@ const exampleMenu = () => {
     layoutOptions:{
       columns:1,
       dx:0,
-      columnWidth:'compact'
+      columnWidth:'compact',
+      rowHeight:'compact'
     },
     groups: [
       {

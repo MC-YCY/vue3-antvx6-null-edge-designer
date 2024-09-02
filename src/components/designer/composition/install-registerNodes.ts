@@ -7,13 +7,13 @@ export const installRegisterNodes = () => {
     register({
         shape: 'custom-address',
         width: 260,
-        height: 100,
+        height: 32,
         component: address,
     })
     register({
         shape: 'custom-box',
         width: 260,
-        height: 100,
+        height: 32,
         component: box,
     })
 }
