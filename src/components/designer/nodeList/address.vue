@@ -22,5 +22,6 @@ Node.on('change:data', ({current}) => {
   width: 100%;
   height: 100%;
   background: skyblue;
+  pointer-events: none;
 }
 </style>
