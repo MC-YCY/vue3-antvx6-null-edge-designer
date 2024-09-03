@@ -111,6 +111,13 @@ const setClick = () => {
     })
   })
 }
+
+// 转为base64 可以再转blob等等 用来表单的提交等等
+const toPNG = () =>{
+  example.value.graph.toPNG((a)=>{
+    console.log(a)
+  })
+}
 </script>
 
 <template>
@@ -170,6 +177,7 @@ const setClick = () => {
           <button @click="example.graph.exportPNG()">exportPNG</button>
           <button @click="example.graph.exportSVG()">exportSVG</button>
           <button @click="example.graph.exportJPEG()">exportJPEG</button>
+          <button @click="toPNG">toPNG</button>
         </div>
       </div>
     </div>
