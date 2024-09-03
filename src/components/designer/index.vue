@@ -61,10 +61,45 @@ const graphEvents = () => {
   })
 }
 
+
+const defaultNodes = () =>{
+  let parent = example.value.graph.addNode({
+    x:100,
+    y:100,
+    width:400,
+    height:400,
+    shape: 'custom-parent',
+    data:{
+      parent:true,
+    }
+  })
+  parent.addChild(example.value.graph.addNode({
+    x:110,
+    y:110,
+    width:100,
+    height:30,
+    shape: 'custom-address',
+    data:{
+      label:'北京市-朝阳区-xx-xx'
+    }
+  }))
+  parent.addChild(example.value.graph.addNode({
+    x:110,
+    y:310,
+    width:100,
+    height:30,
+    shape: 'custom-box',
+    data:{
+      label:'defalut node'
+    }
+  }))
+}
+
 onMounted(() => {
   exampleGraph();
   exampleMenu();
   graphEvents();
+  defaultNodes();
 })
 
 const setClick = () => {
