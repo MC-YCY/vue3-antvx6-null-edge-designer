@@ -1,8 +1,10 @@
 import {Graph} from "@antv/x6";
 import {Stencil} from "@antv/x6-plugin-stencil";
+// https://x6.antv.antgroup.com/tutorial/plugins/export
+import { Export } from '@antv/x6-plugin-export';
 
 export const installGraph = (dom) => {
-    return new Graph({
+    const graph = new Graph({
         container: dom,
         grid: true,
         mousewheel: {
@@ -59,6 +61,8 @@ export const installGraph = (dom) => {
             },
         }
     });
+    graph.use(new Export())
+    return graph;
 }
 export const installMenu = (dom, target) => {
     const stencil = new Stencil({
@@ -84,3 +88,4 @@ export const installMenu = (dom, target) => {
     dom.appendChild(stencil.container);
     return stencil;
 }
+

@@ -35,6 +35,7 @@ const graphEvents = () => {
   //! 左侧菜单添加到画布中 更新节点的宽高等等样式这里判断
   graph.on('cell:added', ({cell}) => {
     let cellData = cell.getData();
+    console.log('触发了 画布添加节点的方法辣')
     //! 判断是否含有 parent:true 如果是则表示父节点可用来嵌套的
     if (cellData.parent) {
       cell.size({
@@ -56,7 +57,7 @@ const graphEvents = () => {
     }
     selectCell.value = cell;
   })
-  graph.on('cell:click', ({cell}) => {
+  graph.on('cell:mousedown', ({cell}) => {
     selectCell.value = cell;
   })
 }
@@ -162,6 +163,15 @@ const setClick = () => {
           <button @click="setClick">set node</button>
         </div>
       </div>
+
+      <div class="designer-form-item">
+        <div class="designer-form-item-label">导出图片:</div>
+        <div class="designer-form-item-input">
+          <button @click="example.graph.exportPNG()">exportPNG</button>
+          <button @click="example.graph.exportSVG()">exportSVG</button>
+          <button @click="example.graph.exportJPEG()">exportJPEG</button>
+        </div>
+      </div>
     </div>
   </div>
   <TeleportContainer/>
@@ -214,12 +224,12 @@ const setClick = () => {
 
 .designer-form-item-input {
   width: 100%;
-  height: 32px;
+  min-height: 32px;
 }
 
 .designer-form-item-input input {
   width: 100%;
-  height: 100%;
+  height: 32px;
   outline: #5b8387;
   box-sizing: border-box;
   background: white;
