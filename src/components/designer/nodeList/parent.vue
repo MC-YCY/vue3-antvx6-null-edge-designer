@@ -10,18 +10,15 @@ Node.on('change:data', ({current}) => {
 </script>
 
 <template>
-  <div class="node-list-address">
-    {{ data.label }}
-  </div>
+<div class="parent" :style="data.style">
+  {{ data.label }}
+</div>
 </template>
 
 <style scoped>
-.node-list-address {
-  color: green;
-  font-size: 20px;
+.parent{
   width: 100%;
   height: 100%;
-  background: yellow;
-  pointer-events: none;
+  background: white;
 }
 </style>

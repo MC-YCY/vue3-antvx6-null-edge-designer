@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import {defineComponent, onMounted, ref} from "vue";
-import {Graph} from '@antv/x6'
-import {Stencil} from '@antv/x6-plugin-stencil'
-import { getTeleport } from '@antv/x6-vue-shape'
+import {getTeleport} from '@antv/x6-vue-shape'
+import {installMenuOptions, installRegisterNodes} from "./composition/install-register-nodes.ts";
+import {installGraph, installMenu} from "./composition/install-example.ts";
+
+//! @antv/x6-vue-shape 使用方式，在页面中使用该组件
 const TeleportContainer = getTeleport();
-import {installMenuOptions, installRegisterNodes} from "./composition/install-registerNodes.ts";
-installRegisterNodes();
 defineComponent({
   name: 'designer',
-  components:{
+  components: {
     TeleportContainer
   }
 });
-
 
 
 let graphRef = ref();
@@ -21,85 +20,58 @@ let example = ref({
   graph: null,
   menu: null,
 });
+let selectCell = ref({});
 const exampleGraph = () => {
-  example.value.graph = new Graph({
-    container: graphRef.value,
-    grid: true,
-    mousewheel: {
-      enabled: true,
-      zoomAtMousePosition: true,
-      modifiers: 'ctrl',
-      minScale: 0.5,
-      maxScale: 3,
-    },
-    connecting: {
-      router: {
-        name: 'manhattan',
-        args: {
-          padding: 1,
-        },
-      },
-      connector: {
-        name: 'rounded',
-        args: {
-          radius: 8,
-        },
-      },
-      anchor: 'center',
-      connectionPoint: 'anchor',
-      allowBlank: false,
-      snap: {
-        radius: 20,
-      },
-    },
-    resizing: true,
-    rotating: true,
-    selecting: {
-      enabled: true,
-      rubberband: true,
-      showNodeSelectionBox: true,
-    },
-    snapline: true,
-    keyboard: true,
-    clipboard: true,
-  });
+  example.value.graph = installGraph(graphRef.value);
 }
+//! 注册自定义组件 到Graph中
+installRegisterNodes();
 const exampleMenu = () => {
-  const stencil = new Stencil({
-    search:true,
-    target: example.value.graph,
-    title:'自定义的菜单以及节点',
-    stencilGraphWidth:260,
-    stencilGraphPadding:0,
-    layoutOptions:{
-      columns:1,
-      dx:0,
-      dy:0,
-      columnWidth:'compact',
-      rowHeight:'compact'
-    },
-    groups: [
-      {
-        title: '基础流程图',
-        name: 'group1',
-      },
-    ],
-  })
-  example.value.menu = stencil;
-  menuRef.value.appendChild(stencil.container)
-
-  installMenuOptions(example);
+  example.value.menu = installMenu(menuRef.value, example.value.graph);
+  installMenuOptions(example.value.graph, example.value.menu);
 }
+const graphEvents = () => {
+  const graph = example.value.graph;
+  //! 左侧菜单添加到画布中 更新节点的宽高等等样式这里判断
+  graph.on('cell:added', ({cell}) => {
+    let cellData = cell.getData();
+    //! 判断是否含有 parent:true 如果是则表示父节点可用来嵌套的
+    if (cellData.parent) {
+      cell.size({
+        width: 400,
+        height: 400,
+      })
+      cell.setData({
+        label: '',
+        style: {
+          borderRadius: `10px`,
+          boxShadow: `0 0 10px #ccc`,
+        }
+      })
+    } else {
+      cell.size({
+        width: cell.size().width,
+        height: 100,
+      })
+    }
+    selectCell.value = cell;
+  })
+  graph.on('cell:click', ({cell}) => {
+    selectCell.value = cell;
+  })
+}
+
 onMounted(() => {
   exampleGraph();
   exampleMenu();
+  graphEvents();
 })
 
-const setClick = () =>{
+const setClick = () => {
   let nodes = example.value.graph.getNodes()
   nodes.forEach(node => {
     node.setData({
-      label:+new Date()
+      label: +new Date()
     })
   })
 }
@@ -110,7 +82,51 @@ const setClick = () =>{
     <div class="designer-menu" ref="menuRef"></div>
     <div class="designer-graph" ref="graphRef"></div>
     <div class="designer-form">
-      <button @click="setClick">set node</button>
+      <div class="designer-form-item">
+        <div class="designer-form-item-label">zIndex:</div>
+        <div class="designer-form-item-input">
+          <input type="text" :value="selectCell.zIndex" @input="(e)=>{
+            selectCell.setZIndex(e.target.value)
+          }"/>
+        </div>
+      </div>
+
+      <div class="designer-form-item">
+        <div class="designer-form-item-label">width:</div>
+        <div class="designer-form-item-input">
+          <input type="text" :value="selectCell?.size  && selectCell?.size()?.width" @input="(e)=>{
+            selectCell.size({width: e.target.value,height: selectCell?.size()?.height})
+          }"/>
+        </div>
+      </div>
+
+      <div class="designer-form-item">
+        <div class="designer-form-item-label">height:</div>
+        <div class="designer-form-item-input">
+          <input type="text" :value="selectCell?.size && selectCell?.size()?.height" @input="(e)=>{
+            selectCell.size({height: e.target.value,width: selectCell?.size()?.width})
+          }"/>
+        </div>
+      </div>
+
+      <div class="designer-form-item">
+        <div class="designer-form-item-label">label:</div>
+        <div class="designer-form-item-input">
+          <input type="text" :value="selectCell?.data && selectCell?.getData()?.label" @input="(e)=>{
+            selectCell.setData({
+              ...selectCell.getData(),
+              label: e.target.value,
+            })
+          }"/>
+        </div>
+      </div>
+
+      <div class="designer-form-item">
+        <div class="designer-form-item-label">测试修改按钮:</div>
+        <div class="designer-form-item-input">
+          <button @click="setClick">set node</button>
+        </div>
+      </div>
     </div>
   </div>
   <TeleportContainer/>
@@ -142,6 +158,43 @@ const setClick = () =>{
   height: 100%;
   max-width: 300px;
   min-width: 300px;
-  background: skyblue;
+  padding: 12px;
+  background: #fafafa;
 }
+
+.designer-form-item {
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+}
+
+.designer-form-item-label {
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.designer-form-item-input {
+  width: 100%;
+  height: 32px;
+}
+
+.designer-form-item-input input {
+  width: 100%;
+  height: 100%;
+  outline: #5b8387;
+  box-sizing: border-box;
+  background: white;
+  border: 1px solid #5b8387;
+  border-radius: 30px;
+  padding-left: 1em;
+}
+
+.designer-form-item + .designer-form-item {
+  margin-top: 20px;
+}
+
 </style>
