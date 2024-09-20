@@ -73,8 +73,14 @@ const toPNG = () => {
 <!--        <button @click="toPNG">toPNG</button>-->
 <!--      </div>-->
 <!--    </div>-->
-    <div class="node-form-code">
-      <editCode language="text" :code="selectCellStyles" @change="handleChangeStyleToCode"></editCode>
+
+    <div class="designer-form-item">
+      <div class="designer-form-item-label">style:</div>
+      <div class="designer-form-item-input">
+        <div class="node-form-code">
+          <editCode language="text" :code="selectCellStyles" @change="handleChangeStyleToCode"></editCode>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -83,7 +89,6 @@ const toPNG = () => {
 .node-form-code {
   width: 100%;
   height: 300px;
-  margin-top: 20px;
 }
 
 .designer-form-item {
