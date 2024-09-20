@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import {defineComponent, onMounted, ref} from "vue";
-import {getTeleport} from '@antv/x6-vue-shape'
-import {installMenuOptions, installRegisterNodes} from "./composition/install-register-nodes.ts";
-import {installGraph, installMenu} from "./composition/install-example.ts";
+import { defineComponent, onMounted, ref } from "vue";
+import { getTeleport } from '@antv/x6-vue-shape'
+import { installMenuOptions, installRegisterNodes } from "./composition/install-register-nodes.ts";
+import { installGraph, installMenu } from "./composition/install-example.ts";
+import { Graph } from "@antv/x6";
+import { Stencil } from "@antv/x6-plugin-stencil";
 
 //! @antv/x6-vue-shape 使用方式，在页面中使用该组件
 const TeleportContainer = getTeleport();
@@ -16,7 +18,11 @@ defineComponent({
 
 let graphRef = ref();
 let menuRef = ref();
-let example = ref({
+interface exampleType {
+  graph: Graph,
+  menu: Stencil
+}
+let example = ref<exampleType>({
   graph: null,
   menu: null,
 });
@@ -33,7 +39,7 @@ const exampleMenu = () => {
 const graphEvents = () => {
   const graph = example.value.graph;
   //! 左侧菜单添加到画布中 更新节点的宽高等等样式这里判断
-  graph.on('cell:added', ({cell}) => {
+  graph.on('cell:added', ({ cell }) => {
     let cellData = cell.getData();
     console.log('触发了 画布添加节点的方法辣')
     //! 判断是否含有 parent:true 如果是则表示父节点可用来嵌套的
@@ -57,41 +63,41 @@ const graphEvents = () => {
     }
     selectCell.value = cell;
   })
-  graph.on('cell:mousedown', ({cell}) => {
+  graph.on('cell:mousedown', ({ cell }) => {
     selectCell.value = cell;
   })
 }
 
 
-const defaultNodes = () =>{
+const defaultNodes = () => {
   let parent = example.value.graph.addNode({
-    x:100,
-    y:100,
-    width:400,
-    height:400,
+    x: 100,
+    y: 100,
+    width: 400,
+    height: 400,
     shape: 'custom-parent',
-    data:{
-      parent:true,
+    data: {
+      parent: true,
     }
   })
   parent.addChild(example.value.graph.addNode({
-    x:110,
-    y:110,
-    width:100,
-    height:30,
+    x: 110,
+    y: 110,
+    width: 100,
+    height: 30,
     shape: 'custom-address',
-    data:{
-      label:'北京市-朝阳区-xx-xx'
+    data: {
+      label: '北京市-朝阳区-xx-xx'
     }
   }))
   parent.addChild(example.value.graph.addNode({
-    x:110,
-    y:310,
-    width:100,
-    height:30,
+    x: 110,
+    y: 310,
+    width: 100,
+    height: 30,
     shape: 'custom-box',
-    data:{
-      label:'defalut node'
+    data: {
+      label: 'defalut node'
     }
   }))
 }
@@ -113,8 +119,8 @@ const setClick = () => {
 }
 
 // 转为base64 可以再转blob等等 用来表单的提交等等
-const toPNG = () =>{
-  example.value.graph.toPNG((a)=>{
+const toPNG = () => {
+  example.value.graph.toPNG((a) => {
     console.log(a)
   })
 }
@@ -128,39 +134,39 @@ const toPNG = () =>{
       <div class="designer-form-item">
         <div class="designer-form-item-label">zIndex:</div>
         <div class="designer-form-item-input">
-          <input type="text" :value="selectCell.zIndex" @input="(e)=>{
+          <input type="text" :value="selectCell.zIndex" @input="(e) => {
             selectCell.setZIndex(e.target.value)
-          }"/>
+          }" />
         </div>
       </div>
 
       <div class="designer-form-item">
         <div class="designer-form-item-label">width:</div>
         <div class="designer-form-item-input">
-          <input type="text" :value="selectCell?.size  && selectCell?.size()?.width" @input="(e)=>{
-            selectCell.size({width: e.target.value,height: selectCell?.size()?.height})
-          }"/>
+          <input type="text" :value="selectCell?.size && selectCell?.size()?.width" @input="(e) => {
+            selectCell.size({ width: e.target.value, height: selectCell?.size()?.height })
+          }" />
         </div>
       </div>
 
       <div class="designer-form-item">
         <div class="designer-form-item-label">height:</div>
         <div class="designer-form-item-input">
-          <input type="text" :value="selectCell?.size && selectCell?.size()?.height" @input="(e)=>{
-            selectCell.size({height: e.target.value,width: selectCell?.size()?.width})
-          }"/>
+          <input type="text" :value="selectCell?.size && selectCell?.size()?.height" @input="(e) => {
+            selectCell.size({ height: e.target.value, width: selectCell?.size()?.width })
+          }" />
         </div>
       </div>
 
       <div class="designer-form-item">
         <div class="designer-form-item-label">label:</div>
         <div class="designer-form-item-input">
-          <input type="text" :value="selectCell?.data && selectCell?.getData()?.label" @input="(e)=>{
+          <input type="text" :value="selectCell?.data && selectCell?.getData()?.label" @input="(e) => {
             selectCell.setData({
               ...selectCell.getData(),
               label: e.target.value,
             })
-          }"/>
+          }" />
         </div>
       </div>
 
@@ -182,7 +188,7 @@ const toPNG = () =>{
       </div>
     </div>
   </div>
-  <TeleportContainer/>
+  <TeleportContainer />
 </template>
 
 <style scoped>
@@ -246,8 +252,7 @@ const toPNG = () =>{
   padding-left: 1em;
 }
 
-.designer-form-item + .designer-form-item {
+.designer-form-item+.designer-form-item {
   margin-top: 20px;
 }
-
 </style>

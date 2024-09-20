@@ -1,3 +1,5 @@
+import { Graph } from "@antv/x6";
+import {Stencil} from "@antv/x6-plugin-stencil";
 import address from "../nodeList/address.vue";
 import box from "../nodeList/box.vue";
 import parent from '../nodeList/parent.vue';
@@ -24,7 +26,7 @@ export const installRegisterNodes = () => {
     })
 }
 
-export const installMenuOptions = (graph, menu) => {
+export const installMenuOptions = (graph:Graph, menu:Stencil) => {
     const r1 = graph.createNode({
         shape: 'custom-address',
         data: {

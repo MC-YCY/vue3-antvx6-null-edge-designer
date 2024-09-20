@@ -3,7 +3,7 @@ import {Stencil} from "@antv/x6-plugin-stencil";
 // https://x6.antv.antgroup.com/tutorial/plugins/export
 import { Export } from '@antv/x6-plugin-export';
 
-export const installGraph = (dom) => {
+export const installGraph = (dom:HTMLElement) => {
     const graph = new Graph({
         container: dom,
         grid: true,
@@ -14,36 +14,7 @@ export const installGraph = (dom) => {
             minScale: 0.5,
             maxScale: 3,
         },
-        connecting: {
-            router: {
-                name: 'manhattan',
-                args: {
-                    padding: 1,
-                },
-            },
-            connector: {
-                name: 'rounded',
-                args: {
-                    radius: 8,
-                },
-            },
-            anchor: 'center',
-            connectionPoint: 'anchor',
-            allowBlank: false,
-            snap: {
-                radius: 20,
-            },
-        },
-        resizing: true,
-        rotating: true,
-        selecting: {
-            enabled: true,
-            rubberband: true,
-            showNodeSelectionBox: true,
-        },
-        snapline: true,
-        keyboard: true,
-        clipboard: true,
+        panning:true,
         // 是否嵌套节点
         embedding:{
             enabled: true,
@@ -59,12 +30,12 @@ export const installGraph = (dom) => {
                     return false
                 })
             },
-        }
+        },
     });
     graph.use(new Export())
     return graph;
 }
-export const installMenu = (dom, target) => {
+export const installMenu = (dom:HTMLElement, target:Graph) => {
     const stencil = new Stencil({
         search: true,
         target: target,

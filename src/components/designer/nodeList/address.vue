@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {inject, ref} from 'vue';
 
-const Graph = inject('getGraph')('getGraph');
-const Node = inject('getNode')('getNode');
+const Graph = inject<any>('getGraph')('getGraph');
+const Node = inject<any>('getNode')('getNode');
 const data = ref(Node.data);
-Node.on('change:data', ({current}) => {
+Node.on('change:data', ({current}:any) => {
   data.value = current;
 })
 </script>
