@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import editCode from '../edit-code/index.vue';
-import {defineComponent, withDefaults, defineProps, ref, watch,computed} from "vue";
+import {defineComponent, withDefaults, defineProps, ref, watch, computed} from "vue";
 import {propsType, defaultProps} from './types.ts'
 
 defineComponent({
@@ -8,18 +8,35 @@ defineComponent({
 });
 
 const props = withDefaults(defineProps<propsType>(), defaultProps)
-let selectCell = ref<propsType['selectCell']>(props.selectCell);
 let selectCellStyles = ref(`{}`);
-watch(()=>props.selectCell,()=>{
-  selectCell.value = props.selectCell;
-  selectCellStyles.value = JSON.stringify(props.selectCell.getData().styles)
+const isUpdate = ref();
+watch(() => props.selectCell, () => {
+  selectCellStyles.value = JSON.stringify(props.selectCell.getData().styles, null, 2);
+  //! 样式的对象有可能一致，在code编辑组件中监听不到的，加一个时间戳做变化
+  isUpdate.value = +new Date();
+}, {
+  deep: true
 })
-const handleChangeStyleToCode = (code) =>{
-  let obj = JSON.parse(code);
-  selectCell.value.setData({
-    ...selectCell.value.getData(),
-    styles:obj
-  })
+const handleChangeStyleToCode = (code) => {
+  try {
+    let obj = JSON.parse(code);
+    props.selectCell.setData({
+      ...props.selectCell.getData(),
+      styles: obj
+    })
+  } catch (e) {
+  }
+}
+const handleBlurStyleToCode = (code) => {
+  // try {
+  //   let obj = JSON.parse(code);
+  //   props.selectCell.setData({
+  //     ...props.selectCell.getData(),
+  //     styles: obj
+  //   })
+  // } catch (e) {
+  //   console.log(e.message)
+  // }
 }
 // 转为base64 可以再转blob等等 用来表单的提交等等
 const toPNG = () => {
@@ -64,21 +81,21 @@ const toPNG = () => {
           }"/>
       </div>
     </div>
-<!--    <div class="designer-form-item">-->
-<!--      <div class="designer-form-item-label">导出图片:</div>-->
-<!--      <div class="designer-form-item-input">-->
-<!--        <button @click="example.graph.exportPNG()">exportPNG</button>-->
-<!--        <button @click="example.graph.exportSVG()">exportSVG</button>-->
-<!--        <button @click="example.graph.exportJPEG()">exportJPEG</button>-->
-<!--        <button @click="toPNG">toPNG</button>-->
-<!--      </div>-->
-<!--    </div>-->
+    <!--    <div class="designer-form-item">-->
+    <!--      <div class="designer-form-item-label">导出图片:</div>-->
+    <!--      <div class="designer-form-item-input">-->
+    <!--        <button @click="example.graph.exportPNG()">exportPNG</button>-->
+    <!--        <button @click="example.graph.exportSVG()">exportSVG</button>-->
+    <!--        <button @click="example.graph.exportJPEG()">exportJPEG</button>-->
+    <!--        <button @click="toPNG">toPNG</button>-->
+    <!--      </div>-->
+    <!--    </div>-->
 
     <div class="designer-form-item">
       <div class="designer-form-item-label">style:</div>
       <div class="designer-form-item-input">
         <div class="node-form-code">
-          <editCode language="text" :code="selectCellStyles" @change="handleChangeStyleToCode"></editCode>
+          <editCode @blur="handleBlurStyleToCode" :isUpdate="isUpdate" language="json" v-model:code="selectCellStyles" @change="handleChangeStyleToCode"></editCode>
         </div>
       </div>
     </div>

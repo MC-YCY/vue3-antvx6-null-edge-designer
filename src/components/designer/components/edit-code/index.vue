@@ -11,48 +11,52 @@ import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
 import CssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
 import HtmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
 
-import {propsType,defaultProps} from './types.ts'
-const props = withDefaults(defineProps<propsType>(),defaultProps)
+import {propsType, defaultProps} from './types.ts'
 
-watch(()=>props.code,()=>{
+const props = withDefaults(defineProps<propsType>(), defaultProps)
+
+watch([() => props.code, () => props.isUpdate], () => {
   // 必加toRaw
   toRaw(instance.value).setValue(props.code);
 })
 
 let editor = ref();
 let instance = ref();
-const emits = defineEmits(['init','change','update:code'])
+const emits = defineEmits(['init', 'change', 'update:code', 'blur'])
 const initEditor = () => {
   instance.value = monaco.editor.create(editor.value, {
     value: props.code,
     language: props.language,
-    minimap:{
-      enabled:false
+    minimap: {
+      enabled: false
     }
   });
-  emits('init',getValue())
+  emits('init', getValue())
 }
-const useEditChangeEvent = () =>{
-  instance.value.onKeyUp(()=>{
-    emits('change',getValue())
+const useEditChangeEvent = () => {
+  instance.value.onKeyUp(() => {
+    emits('change', getValue())
+  })
+  instance.value.onDidBlurEditorWidget(() => {
+    emits('blur', getValue())
   })
 }
-onMounted(()=>{
+onMounted(() => {
   initEditor();
   useEditChangeEvent();
 })
 
-const getValue = () =>{
+const getValue = () => {
   return toRaw(instance.value).getValue();
 }
-const resize = () =>{
+const resize = () => {
   toRaw(instance.value).layout();
 }
 
 // 解决 codeEditor 输入报错的
 // https://github.com/microsoft/monaco-editor/issues/2122
 window.MonacoEnvironment = {
-  getWorker (_: string, label: string) {
+  getWorker(_: string, label: string) {
     if (label === 'typescript' || label === 'javascript') return new TsWorker()
     if (label === 'json') return new JsonWorker()
     if (label === 'css') return new CssWorker()
@@ -65,15 +69,15 @@ defineExpose({
   getValue,
   resize
 })
-window.onresize = () =>{
-  requestAnimationFrame(()=>{
+window.onresize = () => {
+  requestAnimationFrame(() => {
     resize();
   })
 }
 </script>
 
 <style scoped>
-.monaco-editor{
+.monaco-editor {
   width: 100%;
   height: 100%;
 }

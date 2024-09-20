@@ -1,6 +1,6 @@
 import { Cell } from "@antv/x6";
 export interface propsType {
-    selectCell:Cell
+    selectCell:Cell,
 }
 export const defaultProps = {
     selectCell: null,
