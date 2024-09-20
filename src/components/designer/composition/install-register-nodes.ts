@@ -30,20 +30,33 @@ export const installMenuOptions = (graph:Graph, menu:Stencil) => {
     const r1 = graph.createNode({
         shape: 'custom-address',
         data: {
-            label: '自定义vue组件'
+            label: 'vue-component-01',
+            styles:{
+                background:'#ccc',
+                fontSize:'16px'
+            }
         }
     })
     const r2 = graph.createNode({
         shape: 'custom-box',
         data: {
-            label:'自定义的vue组件2'
+            label:'vue-component-02',
+            styles:{
+                background:'#ccc',
+                fontSize:'16px'
+            }
         }
     })
     const r3 = graph.createNode({
         shape: 'custom-parent',
         data: {
             parent:true,
-            label:'父节点容器'
+            label:'vue-component-parent',
+            styles:{
+                background:'#ccc',
+                fontSize:'16px',
+                lineHeight:'32px'
+            }
         }
     })
     menu.load([r1, r2, r3], 'group1')

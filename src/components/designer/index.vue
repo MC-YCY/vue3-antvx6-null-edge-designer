@@ -3,8 +3,9 @@ import { defineComponent, onMounted, ref } from "vue";
 import { getTeleport } from '@antv/x6-vue-shape'
 import { installMenuOptions, installRegisterNodes } from "./composition/install-register-nodes.ts";
 import { installGraph, installMenu } from "./composition/install-example.ts";
-import { Graph } from "@antv/x6";
+import { Graph,Cell } from "@antv/x6";
 import { Stencil } from "@antv/x6-plugin-stencil";
+import nodeForm from './components/node-form/index.vue'
 
 //! @antv/x6-vue-shape 使用方式，在页面中使用该组件
 const TeleportContainer = getTeleport();
@@ -26,7 +27,7 @@ let example = ref<exampleType>({
   graph: null,
   menu: null,
 });
-let selectCell = ref({});
+let selectCell = ref<Cell>({});
 const exampleGraph = () => {
   example.value.graph = installGraph(graphRef.value);
 }
@@ -41,7 +42,6 @@ const graphEvents = () => {
   //! 左侧菜单添加到画布中 更新节点的宽高等等样式这里判断
   graph.on('cell:added', ({ cell }) => {
     let cellData = cell.getData();
-    console.log('触发了 画布添加节点的方法辣')
     //! 判断是否含有 parent:true 如果是则表示父节点可用来嵌套的
     if (cellData.parent) {
       cell.size({
@@ -50,7 +50,7 @@ const graphEvents = () => {
       })
       cell.setData({
         label: '',
-        style: {
+        styles: {
           borderRadius: `10px`,
           boxShadow: `0 0 10px #ccc`,
         }
@@ -87,7 +87,10 @@ const defaultNodes = () => {
     height: 30,
     shape: 'custom-address',
     data: {
-      label: '北京市-朝阳区-xx-xx'
+      label: '北京市-朝阳区-xx-xx',
+      styles:{
+        color:'#333'
+      }
     }
   }))
   parent.addChild(example.value.graph.addNode({
@@ -97,7 +100,10 @@ const defaultNodes = () => {
     height: 30,
     shape: 'custom-box',
     data: {
-      label: 'defalut node'
+      label: 'defalut node',
+      styles:{
+        color:'#333'
+      }
     }
   }))
 }
@@ -109,16 +115,7 @@ onMounted(() => {
   defaultNodes();
 })
 
-const setClick = () => {
-  let nodes = example.value.graph.getNodes()
-  nodes.forEach(node => {
-    node.setData({
-      label: +new Date()
-    })
-  })
-}
 
-// 转为base64 可以再转blob等等 用来表单的提交等等
 const toPNG = () => {
   example.value.graph.toPNG((a) => {
     console.log(a)
@@ -131,61 +128,7 @@ const toPNG = () => {
     <div class="designer-menu" ref="menuRef"></div>
     <div class="designer-graph" ref="graphRef"></div>
     <div class="designer-form">
-      <div class="designer-form-item">
-        <div class="designer-form-item-label">zIndex:</div>
-        <div class="designer-form-item-input">
-          <input type="text" :value="selectCell.zIndex" @input="(e) => {
-            selectCell.setZIndex(e.target.value)
-          }" />
-        </div>
-      </div>
-
-      <div class="designer-form-item">
-        <div class="designer-form-item-label">width:</div>
-        <div class="designer-form-item-input">
-          <input type="text" :value="selectCell?.size && selectCell?.size()?.width" @input="(e) => {
-            selectCell.size({ width: e.target.value, height: selectCell?.size()?.height })
-          }" />
-        </div>
-      </div>
-
-      <div class="designer-form-item">
-        <div class="designer-form-item-label">height:</div>
-        <div class="designer-form-item-input">
-          <input type="text" :value="selectCell?.size && selectCell?.size()?.height" @input="(e) => {
-            selectCell.size({ height: e.target.value, width: selectCell?.size()?.width })
-          }" />
-        </div>
-      </div>
-
-      <div class="designer-form-item">
-        <div class="designer-form-item-label">label:</div>
-        <div class="designer-form-item-input">
-          <input type="text" :value="selectCell?.data && selectCell?.getData()?.label" @input="(e) => {
-            selectCell.setData({
-              ...selectCell.getData(),
-              label: e.target.value,
-            })
-          }" />
-        </div>
-      </div>
-
-      <div class="designer-form-item">
-        <div class="designer-form-item-label">测试修改按钮:</div>
-        <div class="designer-form-item-input">
-          <button @click="setClick">set node</button>
-        </div>
-      </div>
-
-      <div class="designer-form-item">
-        <div class="designer-form-item-label">导出图片:</div>
-        <div class="designer-form-item-input">
-          <button @click="example.graph.exportPNG()">exportPNG</button>
-          <button @click="example.graph.exportSVG()">exportSVG</button>
-          <button @click="example.graph.exportJPEG()">exportJPEG</button>
-          <button @click="toPNG">toPNG</button>
-        </div>
-      </div>
+      <nodeForm :selectCell="selectCell"></nodeForm>
     </div>
   </div>
   <TeleportContainer />
@@ -221,38 +164,4 @@ const toPNG = () => {
   background: #fafafa;
 }
 
-.designer-form-item {
-  width: 100%;
-  height: auto;
-  box-sizing: border-box;
-}
-
-.designer-form-item-label {
-  width: 100%;
-  height: 30px;
-  line-height: 30px;
-  color: #333;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.designer-form-item-input {
-  width: 100%;
-  min-height: 32px;
-}
-
-.designer-form-item-input input {
-  width: 100%;
-  height: 32px;
-  outline: #5b8387;
-  box-sizing: border-box;
-  background: white;
-  border: 1px solid #5b8387;
-  border-radius: 30px;
-  padding-left: 1em;
-}
-
-.designer-form-item+.designer-form-item {
-  margin-top: 20px;
-}
 </style>

@@ -4,19 +4,19 @@ import {inject, ref} from 'vue';
 const Graph = inject<any>('getGraph')('getGraph');
 const Node = inject<any>('getNode')('getNode');
 const data = ref(Node.data);
-Node.on('change:data', ({current}:any) => {
+Node.on('change:data', ({current}: any) => {
   data.value = current;
 })
 </script>
 
 <template>
-  <div class="node-list-address">
+  <div class="node-list-box" :style="data?.styles">
     {{ data.label }}
   </div>
 </template>
 
 <style scoped>
-.node-list-address {
+.node-list-box {
   color: green;
   font-size: 20px;
   width: 100%;

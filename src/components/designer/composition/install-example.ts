@@ -45,7 +45,7 @@ export const installMenu = (dom:HTMLElement, target:Graph) => {
         layoutOptions: {
             columns: 1,
             dx: 0,
-            dy: 0,
+            dy: 3,
             columnWidth: 'compact',
             rowHeight: 'compact'
         },
