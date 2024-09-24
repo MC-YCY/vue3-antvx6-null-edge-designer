@@ -38,10 +38,6 @@ const handleBlurStyleToCode = (code) => {
   //   console.log(e.message)
   // }
 }
-// 转为base64 可以再转blob等等 用来表单的提交等等
-const toPNG = () => {
-
-}
 </script>
 
 <template>
@@ -81,16 +77,6 @@ const toPNG = () => {
           }"/>
       </div>
     </div>
-    <!--    <div class="designer-form-item">-->
-    <!--      <div class="designer-form-item-label">导出图片:</div>-->
-    <!--      <div class="designer-form-item-input">-->
-    <!--        <button @click="example.graph.exportPNG()">exportPNG</button>-->
-    <!--        <button @click="example.graph.exportSVG()">exportSVG</button>-->
-    <!--        <button @click="example.graph.exportJPEG()">exportJPEG</button>-->
-    <!--        <button @click="toPNG">toPNG</button>-->
-    <!--      </div>-->
-    <!--    </div>-->
-
     <div class="designer-form-item">
       <div class="designer-form-item-label">style:</div>
       <div class="designer-form-item-input">

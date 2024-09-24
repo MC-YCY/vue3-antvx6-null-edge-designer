@@ -1,24 +1,30 @@
 <script setup lang="ts">
-import {inject, ref} from 'vue';
+import nodeBase from './tool/node-base.ts';
 
-const Graph = inject<any>('getGraph')('getGraph');
-const Node = inject<any>('getNode')('getNode');
-const data = ref(Node.data);
-Node.on('change:data', ({current}: any) => {
-  data.value = current;
-})
+const {Graph, Node, data, selectedToClassName} = nodeBase();
 </script>
 
 <template>
-  <div class="parent" :style="data?.styles">
-    {{ data.label }}
+  <div class="node-list-parent" :class="selectedToClassName">
+    <div class="node-list-component-content" :style="data?.styles">
+      {{ data.label }}
+    </div>
   </div>
 </template>
-
+<style scoped src="./styles/default.css"></style>
 <style scoped>
-.parent {
+.node-list-parent {
   width: 100%;
   height: 100%;
-  background: white;
+  pointer-events: none;
+  position: relative;
+}
+
+.node-list-component-content {
+  background: #73b923;
+  width: 100%;
+  height: 100%;
+  color: #333;
+  font-size: 14px;
 }
 </style>
