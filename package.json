@@ -13,6 +13,7 @@
     "@antv/x6-plugin-export": "^2.1.6",
     "@antv/x6-plugin-stencil": "^2.1.5",
     "@antv/x6-vue-shape": "^2.1.2",
+    "html2canvas": "^1.4.1",
     "monaco-editor": "^0.52.0",
     "vue": "^3.4.37"
   },

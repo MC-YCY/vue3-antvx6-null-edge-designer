@@ -6,6 +6,7 @@ import {installGraph, installMenu} from "./composition/install-example.ts";
 import {Graph, Cell} from "@antv/x6";
 import {Stencil} from "@antv/x6-plugin-stencil";
 import nodeForm from './components/node-form/index.vue'
+import html2canvas from 'html2canvas';
 
 //! @antv/x6-vue-shape 使用方式，在页面中使用该组件
 const TeleportContainer = getTeleport();
@@ -53,7 +54,7 @@ const graphEvents = () => {
         selected: false,
       })
     }
-    selectCell.value = cell;
+    selectCell.value = example.value.graph.getCellById(cell.id);
     //! 设置组件选中状态
     selectCell.value.setData({
       selected: true
