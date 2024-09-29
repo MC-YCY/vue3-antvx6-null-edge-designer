@@ -128,7 +128,7 @@ onMounted(() => {
 });
 
 const handleExportPng = () => {
-  example.value.graph?.exportPNG();
+  example.value.graph?.exportPNG('antv-x6')
 };
 
 const handleExportSvg = () => {

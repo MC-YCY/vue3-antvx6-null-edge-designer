@@ -8,7 +8,7 @@ defineComponent({
 });
 
 const props = withDefaults(defineProps<propsType>(), defaultProps)
-let selectCellStyles = ref(`{}`);
+let selectCellStyles = ref(`const style = {}`);
 const isUpdate = ref();
 let formState = ref({
   width:0,
@@ -17,7 +17,7 @@ let formState = ref({
   label:undefined,
 })
 watch(() => props.selectCell, () => {
-  selectCellStyles.value = JSON.stringify(props.selectCell.getData().styles, null, 2);
+  selectCellStyles.value = `const style = ${JSON.stringify(props.selectCell.getData().styles, null, 2)}`;
   formState.value = {
     width: props.selectCell.size().width,
     height: props.selectCell.size().height,
@@ -30,11 +30,15 @@ watch(() => props.selectCell, () => {
   deep: true
 })
 const handleChangeStyleToCode = (code) => {
+  let codeString = `${code}
+  return style`;
+  let fn = new Function(codeString);
+  let style = fn();
+
   try {
-    let obj = JSON.parse(code);
     props.selectCell.setData({
       ...props.selectCell.getData(),
-      styles: obj
+      styles: style
     })
   } catch (e) {
   }
@@ -87,7 +91,7 @@ const setLabel = (e) =>{
       <div class="designer-form-item-label">style:</div>
       <div class="designer-form-item-input">
         <div class="node-form-code">
-          <editCode :isUpdate="isUpdate" language="json" v-model:code="selectCellStyles" @change="handleChangeStyleToCode"></editCode>
+          <editCode :isUpdate="isUpdate" language="javascript" v-model:code="selectCellStyles" @change="handleChangeStyleToCode"></editCode>
         </div>
       </div>
     </div>
