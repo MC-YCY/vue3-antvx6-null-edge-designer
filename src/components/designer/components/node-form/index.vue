@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import editCode from '../edit-code/index.vue';
-import {defineComponent, withDefaults, defineProps, ref, watch, toRaw} from "vue";
-import {propsType, defaultProps} from './types.ts'
+import { defineComponent, withDefaults, defineProps, ref, watch, onMounted } from "vue";
+import { propsType, defaultProps } from './types.ts'
 
 defineComponent({
   name: 'DesignerNodeForm',
@@ -11,10 +11,10 @@ const props = withDefaults(defineProps<propsType>(), defaultProps)
 let selectCellStyles = ref(`const style = {}`);
 const isUpdate = ref();
 let formState = ref({
-  width:0,
-  height:0,
-  zIndex:0,
-  label:undefined,
+  width: 0,
+  height: 0,
+  zIndex: 0,
+  label: undefined,
 })
 watch(() => props.selectCell, () => {
   selectCellStyles.value = `const style = ${JSON.stringify(props.selectCell.getData().styles, null, 2)}`;
@@ -26,6 +26,17 @@ watch(() => props.selectCell, () => {
   }
   //! 样式的对象有可能一致，在code编辑组件中监听不到的，加一个时间戳做变化
   isUpdate.value = +new Date();
+  props.selectCell?.on('change:size', () => {
+    selectCellStyles.value = `const style = ${JSON.stringify(props.selectCell.getData().styles, null, 2)}`;
+    formState.value = {
+      width: props.selectCell.size().width,
+      height: props.selectCell.size().height,
+      zIndex: props.selectCell.getZIndex(),
+      label: props.selectCell.getData().label,
+    }
+    //! 样式的对象有可能一致，在code编辑组件中监听不到的，加一个时间戳做变化
+    isUpdate.value = +new Date();
+  })
 }, {
   deep: true
 })
@@ -44,16 +55,16 @@ const handleChangeStyleToCode = (code) => {
   }
 }
 
-const setZIndex = (e) =>{
+const setZIndex = (e) => {
   props.selectCell.setZIndex(formState.value.zIndex)
 }
-const setWidth = (e) =>{
+const setWidth = (e) => {
   props.selectCell.size({ width: Number(formState.value.width), height: props.selectCell?.size()?.height })
 }
-const setHeight = (e) =>{
+const setHeight = (e) => {
   props.selectCell.size({ height: Number(formState.value.height), width: props.selectCell?.size()?.width })
 }
-const setLabel = (e) =>{
+const setLabel = (e) => {
   props.selectCell.setData({
     ...props.selectCell.getData(),
     label: formState.value.label,
@@ -66,32 +77,33 @@ const setLabel = (e) =>{
     <div class="designer-form-item">
       <div class="designer-form-item-label">zIndex:</div>
       <div class="designer-form-item-input">
-        <input type="text" v-model="formState.zIndex" @input="setZIndex"/>
+        <input type="text" v-model="formState.zIndex" @input="setZIndex" />
       </div>
     </div>
     <div class="designer-form-item">
       <div class="designer-form-item-label">width:</div>
       <div class="designer-form-item-input">
-        <input type="text" v-model="formState.width" @input="setWidth"/>
+        <input type="text" v-model="formState.width" @input="setWidth" />
       </div>
     </div>
     <div class="designer-form-item">
       <div class="designer-form-item-label">height:</div>
       <div class="designer-form-item-input">
-        <input type="text" v-model="formState.height" @input="setHeight"/>
+        <input type="text" v-model="formState.height" @input="setHeight" />
       </div>
     </div>
     <div class="designer-form-item">
       <div class="designer-form-item-label">label:</div>
       <div class="designer-form-item-input">
-        <input type="text" v-model="formState.label" @input="setLabel"/>
+        <input type="text" v-model="formState.label" @input="setLabel" />
       </div>
     </div>
     <div class="designer-form-item">
       <div class="designer-form-item-label">style:</div>
       <div class="designer-form-item-input">
         <div class="node-form-code">
-          <editCode :isUpdate="isUpdate" language="javascript" v-model:code="selectCellStyles" @change="handleChangeStyleToCode"></editCode>
+          <editCode :isUpdate="isUpdate" language="javascript" v-model:code="selectCellStyles"
+            @change="handleChangeStyleToCode"></editCode>
         </div>
       </div>
     </div>
@@ -135,7 +147,7 @@ const setLabel = (e) =>{
   padding-left: 1em;
 }
 
-.designer-form-item + .designer-form-item {
+.designer-form-item+.designer-form-item {
   margin-top: 20px;
 }
 </style>

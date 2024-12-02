@@ -81,6 +81,9 @@ const graphEvents = () => {
   graph.on('cell:mousedown', ({ cell }) => {
     nodeSelectedFn(cell);
   });
+  graph.on('cell:change:size',({cell})=>{
+    nodeSelectedFn(cell);
+  })
 };
 
 const defaultNodes = () => {
